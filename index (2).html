@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wasser-Lernportal SHK</title>
+<style>
+:root{
+  --bg:#eef7fb;
+  --panel:#ffffff;
+  --ink:#14324a;
+  --muted:#65798b;
+  --line:#c9dce9;
+  --accent:#1277c8;
+  --accent-soft:#e4f3ff;
+  --green:#238b57;
+  --orange:#e68117;
+  --red:#b9253b;
+  --purple:#7b3dbb;
+  --teal:#168f9d;
+  --shadow:0 8px 24px rgba(17,56,87,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(#f7fbfe,#eef7fb);
+  color:var(--ink)
+}
+a{color:inherit}
+button,input,select{font:inherit}
+main{width:min(1200px,calc(100% - 20px));margin:18px auto 40px}
+.hero{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  margin-bottom:18px
+}
+.hero img{width:100%;display:block}
+.heroText{padding:16px 18px 18px}
+.heroText h1{margin:0 0 6px;font-size:clamp(1.8rem,4vw,3rem)}
+.heroText p{margin:0;color:var(--muted)}
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  margin:16px 0
+}
+.levels{display:flex;gap:8px;flex-wrap:wrap}
+button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:14px;
+  min-height:44px;
+  padding:10px 14px;
+  font-weight:800;
+  cursor:pointer
+}
+button:hover{filter:brightness(.98)}
+button:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px}
+button.active{background:var(--accent-soft);border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:white}
+.progressWrap{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px 16px;
+  box-shadow:var(--shadow);
+  margin-bottom:18px
+}
+.progressRow{display:flex;align-items:center;gap:12px}
+.progress{height:12px;flex:1;background:#e6edf2;border-radius:999px;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--accent));transition:width .2s}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px
+}
+.topic{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  min-height:170px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between
+}
+.topic h3{margin:4px 0 6px}
+.topic p{margin:0;color:var(--muted);font-size:.95rem}
+.badge{
+  display:inline-flex;
+  width:max-content;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#f0f6fa;
+  font-size:.82rem;
+  font-weight:800
+}
+.topic button{margin-top:14px;width:100%}
+.section{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow)
+}
+.section h2{margin-top:0}
+.hidden{display:none!important}
+.learnGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+.card{
+  border:1px solid var(--line);
+  background:#f9fcfe;
+  border-radius:16px;
+  padding:16px
+}
+.card h3{margin-top:0}
+.fact{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#fff7e6;
+  border-left:5px solid var(--orange)
+}
+.answers{display:grid;gap:8px;margin-top:12px}
+.answer{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+  background:white
+}
+.feedback{min-height:24px;font-weight:900;margin-top:10px}
+.ok{color:var(--green)} .bad{color:var(--red)}
+.matchGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+.matchCol{display:grid;gap:8px}
+.matchItem{
+  border:2px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+  background:#fff;
+  cursor:pointer;
+  min-height:46px;
+  display:flex;
+  align-items:center
+}
+.matchItem.selected{border-color:var(--accent);background:var(--accent-soft)}
+.matchItem.matched{border-color:var(--green);background:#eaf7ef}
+.calc{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+.calc input{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px
+}
+.navButtons{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px
+}
+.small{font-size:.9rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid var(--line);padding:8px;text-align:left}
+.levelHint{
+  padding:10px 12px;
+  border-radius:12px;
+  margin-bottom:12px;
+  font-weight:800
+}
+.level-easy{background:#e8f7ea;color:#1f6f3a}
+.level-medium{background:#fff4dc;color:#8a5a00}
+.level-hard{background:#fde8ec;color:#992037}
+footer{text-align:center;color:var(--muted);padding:16px}
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .learnGrid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  main{width:min(100% - 12px,1200px);margin-top:8px}
+  .grid{grid-template-columns:1fr}
+  .hero,.section,.progressWrap{border-radius:16px}
+  .matchGrid,.calc{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <img src="wasser-lernportal.png" alt="Wasser-Lernportal mit Themen Grundlagen, Trinkwasser, Wasserhärte, pH-Wert, TOC und Übungen">
+    <div class="heroText">
+      <h1>💧 Wasser-Lernportal für SHK</h1>
+      <p>Wähle ein Thema und arbeite dich von <strong>Leicht</strong> über <strong>Mittel</strong> bis <strong>Schwer/Profi</strong> vor.</p>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="levels" role="group" aria-label="Schwierigkeitsgrad">
+      <button id="lvlEasy" class="active" type="button">⭐ Leicht</button>
+      <button id="lvlMedium" type="button">⭐⭐ Mittel</button>
+      <button id="lvlHard" type="button">⭐⭐⭐ Schwer / Profi</button>
+    </div>
+    <button id="resetAll" type="button">↻ Fortschritt zurücksetzen</button>
+  </div>
+
+  <section class="progressWrap">
+    <div class="progressRow">
+      <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+      <strong id="progressText">0 / 6 Themen</strong>
+    </div>
+    <div class="small" id="levelDescription">Leicht: Begriffe verstehen, Bilder lesen, Grundlagen sichern.</div>
+  </section>
+
+  <section id="topicGrid" class="grid">
+    <article class="topic">
+      <span class="badge">1 · Grundlagen Wasser</span>
+      <div>
+        <h3>💧 Eigenschaften & Kreislauf</h3>
+        <p>Aggregatzustände, Temperatur, Wärme, Dichte, Kapillarität, chemische Grundlagen.</p>
+      </div>
+      <button data-topic="grundlagen" type="button">Zum Thema →</button>
+    </article>
+
+    <article class="topic">
+      <span class="badge">2 · Trinkwasser</span>
+      <div>
+        <h3>🚰 Herkunft & Versorgung</h3>
+        <p>Wasserkreislauf, Rohwasserquellen, Wasserarten, Schutz, SHK-Bezug.</p>
+      </div>
+      <button data-topic="trinkwasser" type="button">Zum Thema →</button>
+    </article>
+
+    <article class="topic">
+      <span class="badge">3 · Wasserhärte</span>
+      <div>
+        <h3>🪨 Härte & Enthärtung</h3>
+        <p>Ca²⁺/Mg²⁺, Härtearten, Folgen, Bestimmung, Ionenaustausch und Berechnungen.</p>
+      </div>
+      <button data-topic="wasserhaerte" type="button">Zum Thema →</button>
+    </article>
+
+    <article class="topic">
+      <span class="badge">4 · pH-Wert</span>
+      <div>
+        <h3>🧪 Sauer · neutral · basisch</h3>
+        <p>pH-Skala, Messung, Einordnung und Bedeutung für Werkstoffe und Installation.</p>
+      </div>
+      <button data-topic="ph" type="button">Zum Thema →</button>
+    </article>
+
+    <article class="topic">
+      <span class="badge">5 · TOC-Wert</span>
+      <div>
+        <h3>🔬 Organischer Kohlenstoff</h3>
+        <p>TOC verstehen, Wasseranalyse lesen und Relevanz für Kupferrohre beurteilen.</p>
+      </div>
+      <button data-topic="toc" type="button">Zum Thema →</button>
+    </article>
+
+    <article class="topic">
+      <span class="badge">6 · Wissenstest</span>
+      <div>
+        <h3>🏆 Gemischte Übungen</h3>
+        <p>Multiple Choice, Zuordnung, Rechnen und kleine Fallbeispiele aus der SHK-Praxis.</p>
+      </div>
+      <button data-topic="mix" type="button">Zu den Übungen →</button>
+    </article>
+  </section>
+
+  <section id="workspace" class="section hidden" aria-live="polite">
+    <div id="workspaceContent"></div>
+  </section>
+
+  <footer>Wasser verstehen · Technik sicher anwenden · Lernportal für den Unterricht</footer>
+</main>
+
+<script>
+(() => {
+const topics = {
+grundlagen:{
+ title:"Grundlagen Wasser", icon:"💧",
+ easy:{
+  text:"Wasser kommt in drei Aggregatzuständen vor: fest, flüssig und gasförmig. Es ist lebensnotwendig und wird im Alltag sowie in der Technik vielfältig genutzt.",
+  fact:"Merke: fest ⇄ flüssig ⇄ gasförmig.",
+  type:"mc",
+  q:"Welche drei Aggregatzustände hat Wasser?",
+  options:["fest, flüssig, gasförmig","warm, kalt, heiß","weich, mittel, hart"], answer:0
+ },
+ medium:{
+  text:"Der Wasserkreislauf wird durch Sonnenenergie angetrieben. Verdunstung, Kondensation, Niederschlag, Oberflächenabfluss und Versickerung gehören zusammen.",
+  fact:"Merke: Sonne → Verdunstung → Kondensation → Niederschlag → Abfluss/Versickerung.",
+  type:"match",
+  left:["Verdunstung","Kondensation","Versickerung"],
+  right:["Wasserdampf wird zu Wolken","Wasser gelangt in den Boden","Wasser wird zu Wasserdampf"],
+  pairs:[[0,2],[1,0],[2,1]]
+ },
+ hard:{
+  text:"Die Dichte wird mit ρ = m / V berechnet. Wasser besitzt bei 4 °C seine größte Dichte. Diese Besonderheit heißt Dichteanomalie.",
+  fact:"Bei 4 °C ist die Dichte des Wassers am größten.",
+  type:"calc",
+  q:"1 kg Wasser nimmt 1 dm³ ein. Welche Dichte ergibt sich in kg/dm³?",
+  expected:1
+ }
+},
+trinkwasser:{
+ title:"Trinkwasser", icon:"🚰",
+ easy:{
+  text:"Trinkwasser ist Wasser für den menschlichen Gebrauch. Es kann aus Grundwasser, Quellwasser oder Oberflächenwasser gewonnen werden.",
+  fact:"Nicht jedes Wasser ist automatisch Trinkwasser.",
+  type:"mc", q:"Welche Quelle kann Rohwasser für Trinkwasser liefern?",
+  options:["Grundwasser","Motoröl","Heizöl"],answer:0
+ },
+ medium:{
+  text:"Grundwasser entsteht aus versickertem Niederschlagswasser. Quellwasser tritt natürlich aus dem Untergrund aus. Oberflächenwasser stammt zum Beispiel aus Seen und Flüssen.",
+  fact:"Rohwasserquelle und Aufbereitungsbedarf hängen zusammen.",
+  type:"match",
+  left:["Grundwasser","Quellwasser","Oberflächenwasser"],
+  right:["See oder Fluss","tritt natürlich aus dem Untergrund aus","versickertes Niederschlagswasser"],
+  pairs:[[0,2],[1,1],[2,0]]
+ },
+ hard:{
+  text:"Im SHK-Bereich muss die Trinkwasserqualität bis zur Entnahmestelle erhalten bleiben. Fachgerechte Installation, geeignete Werkstoffe und hygienischer Betrieb sind wesentlich.",
+  fact:"Wir transportieren ein Lebensmittel.",
+  type:"mc", q:"Welche Maßnahme unterstützt die Trinkwasserhygiene?",
+  options:["geeignete Werkstoffe und fachgerechte Installation","möglichst lange Stagnation","beliebige Werkstoffe ohne Prüfung"],answer:0
+ }
+},
+wasserhaerte:{
+ title:"Wasserhärte", icon:"🪨",
+ easy:{
+  text:"Wasserhärte wird vor allem durch gelöste Calcium- und Magnesiumionen verursacht. Je mehr Ca²⁺ und Mg²⁺, desto härter das Wasser.",
+  fact:"Gesamthärte = Carbonathärte + Nichtcarbonathärte.",
+  type:"mc", q:"Welche Ionen bestimmen die Wasserhärte besonders?",
+  options:["Calcium- und Magnesiumionen","Natrium- und Kaliumionen","Sauerstoff- und Stickstoffionen"],answer:0
+ },
+ medium:{
+  text:"Carbonathärte wird als vorübergehende Härte bezeichnet und kann beim Erwärmen als Kalk ausfallen. Nichtcarbonathärte bleibt weitgehend gelöst.",
+  fact:"Carbonathärte = vorübergehend · Nichtcarbonathärte = bleibend.",
+  type:"match",
+  left:["Carbonathärte","Nichtcarbonathärte"],
+  right:["bleibende Härte","vorübergehende Härte"],
+  pairs:[[0,1],[1,0]]
+ },
+ hard:{
+  text:"Beim Enthärten über Ionenaustausch werden Calcium- und Magnesiumionen gegen Natriumionen ausgetauscht. Pro entferntem 1 °dH kann der Natriumgehalt ansteigen.",
+  fact:"Enthärtung muss technisch und hygienisch passend eingestellt werden.",
+  type:"calc", q:"Rohwasser 20 °dH, Ziel 8 °dH. Um wie viel °dH wird enthärtet?", expected:12
+ }
+},
+ph:{
+ title:"pH-Wert", icon:"🧪",
+ easy:{
+  text:"Der pH-Wert zeigt, wie sauer oder basisch eine wässrige Lösung ist. pH 7 gilt als neutral.",
+  fact:"pH < 7 sauer · pH = 7 neutral · pH > 7 basisch.",
+  type:"mc", q:"Wie ist pH 7 einzuordnen?",
+  options:["neutral","sauer","basisch"],answer:0
+ },
+ medium:{
+  text:"Jede pH-Stufe nach unten bedeutet 10-mal mehr H₃O⁺-Ionen. Deshalb ist die pH-Skala logarithmisch.",
+  fact:"Kleine pH-Zahl = mehr H₃O⁺-Ionen = saurer.",
+  type:"mc", q:"Wie viel mehr H₃O⁺-Ionen hat pH 5 gegenüber pH 7?",
+  options:["100-mal","2-mal","10-mal"],answer:0
+ },
+ hard:{
+  text:"In der Praxis wird der pH-Wert gemessen und anschließend für die Werkstoff- und Installationsbeurteilung herangezogen.",
+  fact:"Messwert allein genügt nicht – er muss fachlich eingeordnet werden.",
+  type:"mc", q:"Was sollte nach der pH-Messung folgen?",
+  options:["Messwert fachlich einordnen und Folgen beurteilen","Wert ignorieren","nur die Farbe des Wassers betrachten"],answer:0
+ }
+},
+toc:{
+ title:"TOC-Wert", icon:"🔬",
+ easy:{
+  text:"TOC steht für Total Organic Carbon. Der Wert beschreibt den gesamten organisch gebundenen Kohlenstoff im Wasser.",
+  fact:"TOC ist ein Summenparameter für organische Stoffe.",
+  type:"mc", q:"Wofür steht TOC?",
+  options:["Total Organic Carbon","Total Oxygen Content","Technical Operating Code"],answer:0
+ },
+ medium:{
+  text:"Organische Stoffe können zum Beispiel aus Pflanzenresten, Humus und natürlichen organischen Verbindungen stammen.",
+  fact:"TOC bewertet nicht einen einzelnen Stoff, sondern die organische Gesamtbelastung.",
+  type:"match",
+  left:["Pflanzenreste und Humus","TOC-Wert","Kupferrohr"],
+  right:["Werkstoff in der Installation","Quelle organischer Stoffe","Summenparameter für organischen Kohlenstoff"],
+  pairs:[[0,1],[1,2],[2,0]]
+ },
+ hard:{
+  text:"Bei bestimmten pH-Bereichen muss der TOC-Wert bei der Beurteilung von Kupferrohren zusätzlich berücksichtigt werden.",
+  fact:"Werkstoffwahl erfolgt auf Basis der Wasseranalyse.",
+  type:"mc", q:"Was ist die richtige Vorgehensweise?",
+  options:["pH und TOC gemeinsam fachlich bewerten","nur TOC betrachten","nur Rohrfarbe betrachten"],answer:0
+ }
+},
+mix:{
+ title:"Wissenstest & Übungen", icon:"🏆",
+ easy:{
+  text:"Teste dein Grundwissen aus mehreren Themen.",
+  fact:"Ziel: sichere Grundlagen.",
+  type:"mc", q:"Welche Aussage ist richtig?",
+  options:["Wasserhärte hängt u. a. von Calcium und Magnesium ab.","pH 7 ist stark sauer.","TOC beschreibt die Wassertemperatur."],answer:0
+ },
+ medium:{
+  text:"Ordne zentrale Begriffe den passenden Themen zu.",
+  fact:"Zusammenhänge erkennen.",
+  type:"match",
+  left:["Ca²⁺ / Mg²⁺","H₃O⁺","TOC"],
+  right:["organischer Kohlenstoff","pH-Wert","Wasserhärte"],
+  pairs:[[0,2],[1,1],[2,0]]
+ },
+ hard:{
+  text:"Praxisfall: Ein Kunde möchte eine Enthärtungsanlage. Beurteile die Größenordnung der Enthärtung.",
+  fact:"Fachlich begründen statt nur rechnen.",
+  type:"calc", q:"Rohwasser 24 °dH, Ziel 8 °dH. Wie viel °dH werden entfernt?", expected:16
+ }
+}
+};
+
+let level="easy";
+const completed=new Set();
+let currentTopic=null;
+
+const bar=document.getElementById("progressBar");
+const text=document.getElementById("progressText");
+const workspace=document.getElementById("workspace");
+const wc=document.getElementById("workspaceContent");
+const desc=document.getElementById("levelDescription");
+
+function levelLabel(){
+ return level==="easy"?"⭐ Leicht":level==="medium"?"⭐⭐ Mittel":"⭐⭐⭐ Schwer / Profi";
+}
+function updateProgress(){
+ const n=completed.size;
+ bar.style.width=(n/6*100)+"%";
+ text.textContent=n+" / 6 Themen";
+}
+function setLevel(l){
+ level=l;
+ ["Easy","Medium","Hard"].forEach(x=>document.getElementById("lvl"+x).classList.remove("active"));
+ document.getElementById(l==="easy"?"lvlEasy":l==="medium"?"lvlMedium":"lvlHard").classList.add("active");
+ desc.textContent=l==="easy"?"Leicht: Begriffe verstehen, Bilder lesen, Grundlagen sichern.":l==="medium"?"Mittel: Zusammenhänge erkennen, zuordnen und erklären.":"Schwer/Profi: anwenden, rechnen und fachlich beurteilen.";
+ if(currentTopic) renderTopic(currentTopic);
+}
+function levelClass(){return level==="easy"?"level-easy":level==="medium"?"level-medium":"level-hard"}
+
+function renderMC(data, topicKey){
+ wc.innerHTML=`
+ <div class="levelHint ${levelClass()}">${levelLabel()} · ${topics[topicKey].title}</div>
+ <div class="learnGrid">
+   <div class="card"><h3>${topics[topicKey].icon} Wissen</h3><p>${data.text}</p><div class="fact"><strong>Merksatz:</strong> ${data.fact}</div></div>
+   <form id="taskForm" class="card">
+     <h3>🎯 Multiple Choice</h3>
+     <p><strong>${data.q}</strong></p>
+     <div class="answers">${data.options.map((o,i)=>`<label class="answer"><input type="radio" name="ans" value="${i}"><span>${o}</span></label>`).join("")}</div>
+     <button class="primary" type="submit">Antwort prüfen</button>
+     <p id="fb" class="feedback"></p>
+   </form>
+ </div>`;
+ document.getElementById("taskForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const sel=document.querySelector('input[name="ans"]:checked');
+  const fb=document.getElementById("fb");
+  if(!sel){fb.textContent="Bitte zuerst eine Antwort auswählen.";fb.className="feedback bad";return}
+  if(+sel.value===data.answer){
+    fb.textContent="✅ Richtig!";
+    fb.className="feedback ok";
+    completed.add(topicKey);updateProgress();
+  }else{
+    fb.textContent="❌ Noch nicht. Lies den Wissenstext noch einmal.";
+    fb.className="feedback bad";
+  }
+ });
+}
+function renderMatch(data, topicKey){
+ wc.innerHTML=`
+ <div class="levelHint ${levelClass()}">${levelLabel()} · ${topics[topicKey].title}</div>
+ <div class="learnGrid">
+  <div class="card"><h3>${topics[topicKey].icon} Wissen</h3><p>${data.text}</p><div class="fact"><strong>Merksatz:</strong> ${data.fact}</div></div>
+  <div class="card">
+    <h3>🔗 Zuordnungsaufgabe</h3>
+    <p class="small">Klicke links einen Begriff und rechts die passende Aussage an.</p>
+    <div class="matchGrid">
+      <div class="matchCol" id="leftCol">${data.left.map((x,i)=>`<div class="matchItem" data-side="l" data-i="${i}">${x}</div>`).join("")}</div>
+      <div class="matchCol" id="rightCol">${data.right.map((x,i)=>`<div class="matchItem" data-side="r" data-i="${i}">${x}</div>`).join("")}</div>
+    </div>
+    <p id="fb" class="feedback"></p>
+  </div>
+ </div>`;
+ let selectedL=null,selectedR=null,matched=0;
+ wc.querySelectorAll(".matchItem").forEach(el=>el.addEventListener("click",()=>{
+   if(el.classList.contains("matched")) return;
+   const side=el.dataset.side, idx=+el.dataset.i;
+   wc.querySelectorAll(`.matchItem[data-side="${side}"]`).forEach(x=>x.classList.remove("selected"));
+   el.classList.add("selected");
+   if(side==="l") selectedL=idx; else selectedR=idx;
+   if(selectedL!==null && selectedR!==null){
+     const ok=data.pairs.some(p=>p[0]===selectedL && p[1]===selectedR);
+     const fb=document.getElementById("fb");
+     if(ok){
+       wc.querySelector(`.matchItem[data-side="l"][data-i="${selectedL}"]`).classList.add("matched");
+       wc.querySelector(`.matchItem[data-side="r"][data-i="${selectedR}"]`).classList.add("matched");
+       matched++;
+       fb.textContent="✅ Richtig zugeordnet.";
+       fb.className="feedback ok";
+       if(matched===data.pairs.length){completed.add(topicKey);updateProgress();fb.textContent="🏆 Alles richtig zugeordnet!";}
+     } else {
+       fb.textContent="❌ Diese Zuordnung passt noch nicht.";
+       fb.className="feedback bad";
+     }
+     wc.querySelectorAll(".matchItem").forEach(x=>x.classList.remove("selected"));
+     selectedL=null;selectedR=null;
+   }
+ }));
+}
+function renderCalc(data, topicKey){
+ wc.innerHTML=`
+ <div class="levelHint ${levelClass()}">${levelLabel()} · ${topics[topicKey].title}</div>
+ <div class="learnGrid">
+   <div class="card"><h3>${topics[topicKey].icon} Wissen</h3><p>${data.text}</p><div class="fact"><strong>Merksatz:</strong> ${data.fact}</div></div>
+   <form id="calcForm" class="card">
+     <h3>🧮 Rechenaufgabe</h3>
+     <p><strong>${data.q}</strong></p>
+     <div class="calc"><input id="calcAns" type="number" step="any" inputmode="decimal" aria-label="Ergebnis"><button class="primary" type="submit">Prüfen</button></div>
+     <p id="fb" class="feedback"></p>
+   </form>
+ </div>`;
+ document.getElementById("calcForm").addEventListener("submit",e=>{
+   e.preventDefault();
+   const v=parseFloat(document.getElementById("calcAns").value.replace(",","."));
+   const fb=document.getElementById("fb");
+   if(!Number.isFinite(v)){fb.textContent="Bitte ein Ergebnis eingeben.";fb.className="feedback bad";return}
+   if(Math.abs(v-data.expected)<0.001){
+     fb.textContent="✅ Richtig gerechnet!";
+     fb.className="feedback ok";
+     completed.add(topicKey);updateProgress();
+   } else {
+     fb.textContent="❌ Prüfe deinen Rechenweg noch einmal.";
+     fb.className="feedback bad";
+   }
+ });
+}
+function renderTopic(key){
+ currentTopic=key;
+ const data=topics[key][level];
+ workspace.classList.remove("hidden");
+ if(data.type==="mc") renderMC(data,key);
+ else if(data.type==="match") renderMatch(data,key);
+ else renderCalc(data,key);
+ workspace.scrollIntoView({behavior:"smooth",block:"start"});
+}
+document.querySelectorAll("[data-topic]").forEach(b=>b.addEventListener("click",()=>renderTopic(b.dataset.topic)));
+document.getElementById("lvlEasy").onclick=()=>setLevel("easy");
+document.getElementById("lvlMedium").onclick=()=>setLevel("medium");
+document.getElementById("lvlHard").onclick=()=>setLevel("hard");
+document.getElementById("resetAll").onclick=()=>{completed.clear();currentTopic=null;workspace.classList.add("hidden");updateProgress();window.scrollTo({top:0,behavior:"smooth"})};
+updateProgress();
+})();
+</script>
+</body>
+</html>
